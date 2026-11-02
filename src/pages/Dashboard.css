@@ -1,0 +1,225 @@
+
+.dashboard-page {
+  min-height: 100vh;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  background: #eff6ff;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* Header */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 3px 15px rgba(37, 99, 235, 0.08);
+}
+
+.dashboard-header h1 {
+  color: #1e3a8a;
+  font-size: 25px;
+  margin: 0 0 5px;
+}
+
+.dashboard-header p {
+  color: #64748b;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Logout */
+.logout-button {
+  padding: 10px 22px;
+  background: #fee2e2;
+  color: #b91c1c;
+  border: none;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.logout-button:hover {
+  background: #fecaca;
+}
+
+/* Main Content */
+.dashboard-content {
+  width: 100%;
+  max-width: 650px;
+  margin: auto;
+  padding: 35px 20px;
+}
+
+/* Welcome Section */
+.dashboard-welcome {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.dashboard-welcome h2 {
+  color: #1e3a8a;
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.dashboard-welcome p {
+  color: #64748b;
+  font-size: 15px;
+}
+
+/* Attendance Actions */
+.attendance-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 180px;
+  padding: 25px;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 5px 20px rgba(37, 99, 235, 0.08);
+}
+
+/* Punch In / Punch Out Buttons */
+.attendance-button {
+  width: 100%;
+  max-width: 320px;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  border-radius: 12px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.attendance-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.attendance-button span:nth-child(2) {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.attendance-button small {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.attendance-icon {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+/* Punch In */
+.punch-in-button {
+  background: #16a34a;
+}
+
+.punch-in-button:hover {
+  background: #15803d;
+}
+
+/* Punch Out */
+.punch-out-button {
+  background: #2563eb;
+}
+
+.punch-out-button:hover {
+  background: #1d4ed8;
+}
+
+/* Loading and Error Messages */
+.attendance-actions > p {
+  color: #64748b;
+  text-align: center;
+  font-size: 14px;
+}
+
+.attendance-actions > div {
+  width: 100%;
+  text-align: center;
+}
+
+.attendance-actions > div p {
+  color: #dc2626;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.attendance-actions > div button {
+  padding: 10px 25px;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.attendance-actions > div button:hover {
+  background: #1d4ed8;
+}
+
+/* Footer */
+.dashboard-footer {
+  text-align: center;
+  padding: 20px 10px;
+  color: #94a3b8;
+  font-size: 12px;
+  margin-top: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .dashboard-page {
+    padding: 15px;
+  }
+
+  .dashboard-header {
+    padding: 15px;
+    gap: 10px;
+  }
+
+  .dashboard-header h1 {
+    font-size: 19px;
+  }
+
+  .dashboard-header p {
+    font-size: 12px;
+  }
+
+  .logout-button {
+    padding: 9px 14px;
+    font-size: 12px;
+  }
+
+  .dashboard-content {
+    padding: 25px 5px;
+  }
+
+  .dashboard-welcome h2 {
+    font-size: 23px;
+  }
+
+  .attendance-actions {
+    padding: 18px;
+  }
+
+  .attendance-button {
+    min-height: 145px;
+  }
+}
+

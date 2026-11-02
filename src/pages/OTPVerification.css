@@ -1,0 +1,141 @@
+
+.otp-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #e8efff, #f8fafc);
+  font-family: Arial, sans-serif;
+}
+
+.otp-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 40px 35px;
+  background: #ffffff;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+}
+
+.otp-icon {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.otp-card h2 {
+  color: #172554;
+  font-size: 23px;
+  margin-bottom: 12px;
+}
+
+.otp-description {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.otp-mobile {
+  margin-top: 8px;
+  color: #172554;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.otp-input-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 30px 0;
+}
+
+.otp-input {
+  width: 46px;
+  height: 52px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  color: #172554;
+  outline: none;
+}
+
+.otp-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.otp-verify-button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background: #1d4ed8;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.otp-verify-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.otp-resend {
+  margin-top: 25px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.otp-resend button {
+  margin-left: 5px;
+  border: none;
+  background: none;
+  color: #2563eb;
+  font-weight: 600;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.otp-back-button {
+  margin-top: 25px;
+  border: none;
+  background: none;
+  color: #2563eb;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.otp-footer {
+  margin-top: 35px;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+@media (max-width: 420px) {
+  .otp-card {
+    padding: 30px 18px;
+  }
+
+  .otp-input-container {
+    gap: 6px;
+  }
+
+  .otp-input {
+    width: 40px;
+    height: 48px;
+  }
+}

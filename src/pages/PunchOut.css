@@ -1,0 +1,100 @@
+
+.punch-out-page {
+  min-height: 100vh;
+  background: #eff6ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 25px;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.punch-out-card {
+  width: 100%;
+  max-width: 500px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 5px 20px rgba(37, 99, 235, 0.1);
+  text-align: center;
+}
+
+.punch-out-card h2 {
+  color: #1e3a8a;
+  margin-bottom: 10px;
+}
+
+.punch-out-card > p {
+  color: #64748b;
+  margin-bottom: 20px;
+}
+
+#punch-out-reader {
+  width: 100%;
+  margin: 20px auto;
+}
+
+.punch-out-info {
+  background: #eff6ff;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 20px 0;
+  overflow-wrap: anywhere;
+}
+
+.punch-out-info p {
+  font-size: 13px;
+  color: #1e3a5f;
+  margin: 8px 0;
+}
+
+.punch-out-submit,
+.punch-out-back,
+.punch-out-secondary {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+.punch-out-submit {
+  background: #2563eb;
+  color: white;
+}
+
+.punch-out-submit:hover {
+  background: #1d4ed8;
+}
+
+.punch-out-submit:disabled,
+.punch-out-back:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.punch-out-back {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.punch-out-secondary {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.punch-out-error {
+  color: #dc2626;
+  font-size: 13px;
+  margin-top: 15px;
+}
+
+.punch-out-success {
+  color: #15803d;
+  font-weight: 600;
+  margin-top: 15px;
+}
+

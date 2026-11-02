@@ -1,0 +1,152 @@
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f1f5f9;
+}
+
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #e8efff, #f8fafc);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: white;
+  border-radius: 16px;
+  padding: 38px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+}
+
+.brand {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.brand-icon {
+  width: 55px;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  border-radius: 14px;
+  background: #1d4ed8;
+  color: white;
+  font-size: 27px;
+  font-weight: bold;
+}
+
+.brand h1 {
+  font-size: 23px;
+  color: #172554;
+}
+
+.brand p,
+.subtitle {
+  color: #64748b;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.auth-content h2 {
+  font-size: 24px;
+  color: #172554;
+  margin-bottom: 8px;
+}
+
+.auth-content form {
+  margin-top: 25px;
+}
+
+.auth-content label {
+  display: block;
+  margin: 17px 0 8px;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.auth-content input {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+}
+
+.auth-content input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.primary-button {
+  width: 100%;
+  margin-top: 25px;
+  padding: 14px;
+  background: #1d4ed8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.switch-text {
+  margin-top: 25px;
+  text-align: center;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.switch-text button {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.error-message,
+.success-message {
+  margin-top: 15px;
+  font-size: 13px;
+}
+
+.error-message {
+  color: #dc2626;
+}
+
+.success-message {
+  color: #15803d;
+}
+
+.footer {
+  margin-top: 35px;
+  text-align: center;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 25px 20px;
+  }
+}

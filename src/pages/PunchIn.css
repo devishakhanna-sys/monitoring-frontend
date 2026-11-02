@@ -1,0 +1,160 @@
+
+.punch-page {
+  min-height: 100vh;
+  background: #f1f5f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 25px;
+}
+
+.punch-card {
+  width: 100%;
+  max-width: 550px;
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+}
+
+.back-button {
+  border: none;
+  background: none;
+  color: #2563eb;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 25px;
+}
+
+.punch-heading {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.punch-heading h2 {
+  color: #172554;
+  font-size: 26px;
+}
+
+.punch-heading p {
+  color: #64748b;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.qr-reader {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto 20px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.punch-primary-button {
+  width: 100%;
+  padding: 14px;
+  background: #15803d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.punch-primary-button:hover {
+  background: #166534;
+}
+
+.scan-result,
+.location-result {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 20px;
+  overflow-wrap: anywhere;
+}
+
+.scan-result h3,
+.location-result h3 {
+  color: #166534;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.scan-result p,
+.location-result p {
+  color: #334155;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+.location-message {
+  text-align: center;
+  color: #2563eb;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.punch-error {
+  color: #dc2626;
+  font-size: 13px;
+  margin-top: 18px;
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .punch-card {
+    padding: 22px 18px;
+  }
+}
+
+
+.selfie-section,
+.selfie-preview-section {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.selfie-video {
+  display: block;
+  width: 100%;
+  max-width: 350px;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin: 15px auto;
+  background: #000;
+}
+
+.selfie-preview {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  max-height: 350px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin: 15px auto;
+}
+
+.punch-secondary-button {
+  padding: 10px 20px;
+  margin: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #fff;
+}
+
+.punch-primary-button:disabled,
+.back-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.punch-success {
+  margin-top: 20px;
+  text-align: center;
+}
