@@ -5,6 +5,15 @@ import "./PunchIn.css";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+const extractQrValue = (scannedText) => {
+  try {
+    const url = new URL(scannedText);
+    return url.searchParams.get("x") || scannedText.trim();
+  } catch {
+    return scannedText.trim();
+  }
+};
+
 function PunchIn({ onBack }) {
   const scannerRef = useRef(null);
   const isMountedRef = useRef(true);
@@ -24,9 +33,7 @@ function PunchIn({ onBack }) {
   const [submitting, setSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
-  // ---------------------------------------------------------
-  // CLEANUP
-  // ---------------------------------------------------------
+  
 
   const stopSelfieCamera = () => {
     if (selfieStreamRef.current) {
@@ -65,9 +72,42 @@ function PunchIn({ onBack }) {
     };
   }, []);
 
-  // ---------------------------------------------------------
-  // START QR SCANNER
-  // ---------------------------------------------------------
+  useEffect(() => {
+  if (!selfieCameraActive) return;
+
+  const video = videoRef.current;
+  const stream = selfieStreamRef.current;
+
+  if (!video || !stream) return;
+
+  video.srcObject = stream;
+
+  const playVideo = () => {
+    video.play().catch((err) => {
+      console.error("Video playback error:", err);
+
+      if (isMountedRef.current) {
+        setError("Unable to display camera preview. Please try again.");
+      }
+    });
+  };
+
+  if (video.readyState >= 1) {
+    playVideo();
+  } else {
+    video.onloadedmetadata = playVideo;
+  }
+
+  return () => {
+    video.onloadedmetadata = null;
+
+    if (video.srcObject === stream) {
+      video.srcObject = null;
+    }
+  };
+}, [selfieCameraActive]);
+
+  
 
   const startScanner = async () => {
     if (scanning || scannerRef.current?.isScanning) {
@@ -93,11 +133,21 @@ function PunchIn({ onBack }) {
           fps: 10,
           qrbox: { width: 250, height: 250 },
         },
-        async (decodedText) => {
-          if (!isMountedRef.current) return;
+        // async (decodedText) => {
+        //   if (!isMountedRef.current) return;
 
-          setQrValue(decodedText);
-          setError("");
+        //   setQrValue(decodedText);
+        //   setError("");
+        async (decodedText) => {
+  if (!isMountedRef.current) return;
+
+  const extractedValue = extractQrValue(decodedText);
+
+  console.log("Scanned QR:", decodedText);
+  console.log("Extracted QR Value:", extractedValue);
+
+  setQrValue(extractedValue);
+  setError("");
 
           try {
             if (scanner.isScanning) {
@@ -134,9 +184,7 @@ function PunchIn({ onBack }) {
     }
   };
 
-  // ---------------------------------------------------------
-  // CAPTURE GPS LOCATION
-  // ---------------------------------------------------------
+  
 
   const captureLocation = () => {
     if (!navigator.geolocation) {
@@ -177,51 +225,82 @@ function PunchIn({ onBack }) {
     );
   };
 
-  // ---------------------------------------------------------
-  // START FRONT CAMERA FOR SELFIE
-  // ---------------------------------------------------------
+  
+
+  // const startSelfieCamera = async () => {
+  //   try {
+  //     setError("");
+
+  //     if (!navigator.mediaDevices?.getUserMedia) {
+  //       setError("Camera is not supported. Please use HTTPS or localhost.");
+  //       return;
+  //     }
+
+  //     const stream = await navigator.mediaDevices.getUserMedia({
+  //       video: {
+  //         facingMode: "user",
+  //       },
+  //       audio: false,
+  //     });
+
+  //     if (!isMountedRef.current) {
+  //       stream.getTracks().forEach((track) => track.stop());
+  //       return;
+  //     }
+
+  //     selfieStreamRef.current = stream;
+
+  //     if (videoRef.current) {
+  //       videoRef.current.srcObject = stream;
+  //       await videoRef.current.play();
+  //     }
+
+  //     setSelfieCameraActive(true);
+  //   } catch (err) {
+  //     console.error("Selfie camera error:", err);
+
+  //     setError(
+  //       "Unable to access front camera. Please allow camera permission."
+  //     );
+  //   }
+  // };
 
   const startSelfieCamera = async () => {
-    try {
-      setError("");
+  try {
+    setError("");
 
-      if (!navigator.mediaDevices?.getUserMedia) {
-        setError("Camera is not supported. Please use HTTPS or localhost.");
-        return;
-      }
-
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: "user",
-        },
-        audio: false,
-      });
-
-      if (!isMountedRef.current) {
-        stream.getTracks().forEach((track) => track.stop());
-        return;
-      }
-
-      selfieStreamRef.current = stream;
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-      }
-
-      setSelfieCameraActive(true);
-    } catch (err) {
-      console.error("Selfie camera error:", err);
-
-      setError(
-        "Unable to access front camera. Please allow camera permission."
-      );
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setError("Camera is not supported. Please use HTTPS or localhost.");
+      return;
     }
-  };
 
-  // ---------------------------------------------------------
-  // CAPTURE SELFIE
-  // ---------------------------------------------------------
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: "user",
+      },
+      audio: false,
+    });
+
+    if (!isMountedRef.current) {
+      stream.getTracks().forEach((track) => track.stop());
+      return;
+    }
+
+    selfieStreamRef.current = stream;
+
+    // Render the video element first
+    setSelfieCameraActive(true);
+
+  } catch (err) {
+    console.error("Selfie camera error:", err);
+
+    setError(
+      "Unable to access front camera. Please allow camera permission."
+    );
+  }
+};
+
+  
 
   const captureSelfie = () => {
     const video = videoRef.current;
@@ -266,9 +345,7 @@ function PunchIn({ onBack }) {
     );
   };
 
-  // ---------------------------------------------------------
-  // RETAKE SELFIE
-  // ---------------------------------------------------------
+  
 
   const retakeSelfie = () => {
     if (selfiePreview) {
@@ -281,9 +358,7 @@ function PunchIn({ onBack }) {
     startSelfieCamera();
   };
 
-  // ---------------------------------------------------------
-  // SUBMIT PUNCH IN
-  // ---------------------------------------------------------
+  
 
   const handlePunchIn = async () => {
     if (!qrValue || !location || !selfieFile) {
@@ -341,9 +416,7 @@ function PunchIn({ onBack }) {
     }
   };
 
-  // ---------------------------------------------------------
-  // BACK TO DASHBOARD
-  // ---------------------------------------------------------
+  
 
   const handleBack = async () => {
     const scanner = scannerRef.current;
@@ -369,9 +442,7 @@ function PunchIn({ onBack }) {
     }
   };
 
-  // ---------------------------------------------------------
-  // UI
-  // ---------------------------------------------------------
+  
 
   return (
     <div className="punch-page">

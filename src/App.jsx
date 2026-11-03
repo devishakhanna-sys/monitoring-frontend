@@ -18,41 +18,101 @@ function App() {
   const [statusLoading, setStatusLoading] = useState(false);
   const [statusError, setStatusError] = useState("");
 
-  const handleRequestOTP = async (mobileNumber) => {
-    try {
-      if (!API_BASE_URL) {
-        alert("API URL is not configured.");
-        return;
-      }
+  // const handleRequestOTP = async (mobileNumber) => {
+  //   try {
+  //     if (!API_BASE_URL) {
+  //       alert("API URL is not configured.");
+  //       return;
+  //     }
 
-      const response = await fetch(
-        `${API_BASE_URL.replace(/\/$/, "")}/third-party-employee/sendOTP`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            mobile: mobileNumber,
-          }),
-        }
+  //     const response = await fetch(
+  //       `${API_BASE_URL.replace(/\/$/, "")}/third-party-employee/sendOTP`,
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           mobile: mobileNumber,
+  //         }),
+  //       }
+  //     );
+
+  //     const result = await response.json();
+
+  //     if (!response.ok || !result.success) {
+  //       alert(result.message || "Unable to send OTP.");
+  //       return;
+  //     }
+
+  //     setMobile(mobileNumber);
+  //     setCurrentPage("otp");
+
+  //   } catch (error) {
+  //     console.error("Send OTP error:", error);
+  //     alert("Unable to connect to the server. Please try again.");
+  //   }
+  // };
+
+  const handleRequestOTP = async (mobileNumber) => {
+  try {
+    if (!API_BASE_URL) {
+      alert("API URL is not configured.");
+      return;
+    }
+
+    const response = await fetch(
+      `${API_BASE_URL.replace(/\/$/, "")}/third-party-employee/sendOTP`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          mobile: mobileNumber,
+        }),
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      alert(result.message || "Unable to login.");
+      return;
+    }
+
+    setMobile(mobileNumber);
+
+    // First-time login: OTP required
+    if (result.data?.requiresOTP === true) {
+      setCurrentPage("otp");
+      return;
+    }
+
+    // Previously verified employee: direct login
+    if (result.data?.requiresOTP === false && result.data?.token) {
+      localStorage.setItem(
+        "thirdPartyEmployeeToken",
+        result.data.token
       );
 
-      const result = await response.json();
+      localStorage.setItem(
+        "thirdPartyEmployee",
+        JSON.stringify(result.data.employee)
+      );
 
-      if (!response.ok || !result.success) {
-        alert(result.message || "Unable to send OTP.");
-        return;
-      }
-
-      setMobile(mobileNumber);
-      setCurrentPage("otp");
-
-    } catch (error) {
-      console.error("Send OTP error:", error);
-      alert("Unable to connect to the server. Please try again.");
+      await loadAttendanceStatus();
+      setCurrentPage("dashboard");
+      return;
     }
-  };
+
+    alert("Invalid login response from server.");
+
+  } catch (error) {
+    console.error("Login error:", error);
+    alert("Unable to connect to the server. Please try again.");
+  }
+};
 
   // Fetch attendance status from database
   const loadAttendanceStatus = async () => {

@@ -54,9 +54,7 @@ function OTPVerification({ mobile = "", onBack, onVerifySuccess }) {
     inputRefs.current[Math.min(pastedValue.length, 5)]?.focus();
   };
 
-  // ---------------------------------------------------------
-  // VERIFY OTP
-  // ---------------------------------------------------------
+  
 
   const handleVerifyOTP = async () => {
     const enteredOTP = otp.join("");
@@ -99,7 +97,7 @@ function OTPVerification({ mobile = "", onBack, onVerifySuccess }) {
         return;
       }
 
-      // Store authentication token.
+      
       localStorage.setItem("thirdPartyEmployeeToken", token);
       localStorage.setItem(
         "thirdPartyEmployee",
@@ -117,9 +115,7 @@ function OTPVerification({ mobile = "", onBack, onVerifySuccess }) {
     }
   };
 
-  // ---------------------------------------------------------
-  // RESEND OTP
-  // ---------------------------------------------------------
+ 
 
   const handleResendOTP = async () => {
     try {

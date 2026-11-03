@@ -1,14 +1,327 @@
 
+// import { useEffect, useRef, useState } from "react";
+// import { Html5Qrcode } from "html5-qrcode";
+// import "./PunchOut.css";
+
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+// const extractQrValue = (scannedText) => {
+//   try {
+//     const url = new URL(scannedText);
+//     return url.searchParams.get("x") || scannedText.trim();
+//   } catch {
+//     return scannedText.trim();
+//   }
+// };
+
+// function PunchOut({ onBack, onSuccess }) {
+//   const scannerRef = useRef(null);
+//   const scannedRef = useRef(false);
+//   const mountedRef = useRef(false);
+
+//   const [qrValue, setQrValue] = useState("");
+//   const [location, setLocation] = useState(null);
+//   const [loadingLocation, setLoadingLocation] = useState(false);
+//   const [submitting, setSubmitting] = useState(false);
+//   const [error, setError] = useState("");
+//   const [message, setMessage] = useState("");
+
+//   // Stop and clear QR scanner.
+//   const stopScanner = async () => {
+//     if (scannerRef.current) {
+//       const scanner = scannerRef.current;
+
+//       try {
+//         if (scanner.isScanning) {
+//           await scanner.stop();
+//         }
+
+//         await scanner.clear();
+//       } catch (err) {
+//         console.error("Scanner stop error:", err);
+//       }
+
+//       if (scannerRef.current === scanner) {
+//         scannerRef.current = null;
+//       }
+//     }
+//   };
+
+//   // Capture employee's current GPS location.
+//   const captureLocation = () => {
+//     if (!navigator.geolocation) {
+//       setError("Geolocation is not supported by this browser.");
+//       return;
+//     }
+
+//     setLoadingLocation(true);
+//     setError("");
+//     setLocation(null);
+
+//     navigator.geolocation.getCurrentPosition(
+//       (position) => {
+//         if (!mountedRef.current) return;
+
+//         setLocation({
+//           latitude: position.coords.latitude,
+//           longitude: position.coords.longitude,
+//           accuracy: position.coords.accuracy,
+//         });
+
+//         setLoadingLocation(false);
+//       },
+//       (err) => {
+//         console.error("Location error:", err);
+
+//         if (!mountedRef.current) return;
+
+//         setError(
+//           "Unable to get your current location. Please enable location permission and retry."
+//         );
+
+//         setLoadingLocation(false);
+//       },
+//       {
+//         enableHighAccuracy: true,
+//         timeout: 15000,
+//         maximumAge: 0,
+//       }
+//     );
+//   };
+
+//   // Start QR scanner.
+//   useEffect(() => {
+//     let mounted = true;
+//     mountedRef.current = true;
+
+//     const startScanner = async () => {
+//       try {
+//         const scanner = new Html5Qrcode("punch-out-reader");
+
+//         scannerRef.current = scanner;
+
+//         await scanner.start(
+//           { facingMode: "environment" },
+//           {
+//             fps: 10,
+//             qrbox: { width: 250, height: 250 },
+//           },
+//           async (decodedText) => {
+//             if (!mounted || scannedRef.current) return;
+
+//             // Prevent duplicate scan callbacks.
+//             // scannedRef.current = true;
+
+//             // setQrValue(decodedText);
+//             // setError("");
+
+//             // await stopScanner();
+//             // Prevent duplicate scan callbacks.
+// scannedRef.current = true;
+
+// const extractedValue = extractQrValue(decodedText);
+
+// console.log("Scanned QR:", decodedText);
+// console.log("Extracted QR Value:", extractedValue);
+
+// setQrValue(extractedValue);
+// setError("");
+
+// await stopScanner();
+
+//             if (mounted) {
+//               captureLocation();
+//             }
+//           },
+//           () => {}
+//         );
+//       } catch (err) {
+//         console.error("QR scanner error:", err);
+
+//         if (mounted) {
+//           setError(
+//             "Unable to start camera. Please allow camera permission."
+//           );
+//         }
+//       }
+//     };
+
+//     startScanner();
+
+//     return () => {
+//       mounted = false;
+//       mountedRef.current = false;
+//       stopScanner();
+//     };
+//   }, []);
+
+//   // Submit Punch Out details to backend.
+//   const handleSubmit = async () => {
+//     try {
+//       setSubmitting(true);
+//       setError("");
+//       setMessage("");
+
+//       if (!qrValue || !location) {
+//         setError("Please scan the site QR and capture your location.");
+//         return;
+//       }
+
+//       if (!API_BASE_URL) {
+//         setError("API URL is not configured.");
+//         return;
+//       }
+
+//       const token = localStorage.getItem("thirdPartyEmployeeToken");
+
+//       if (!token) {
+//         setError("Your login session has expired. Please login again.");
+//         return;
+//       }
+
+//       const response = await fetch(
+//         `${API_BASE_URL.replace(/\/$/, "")}/third-party-employee/punchOut`,
+//         {
+//           method: "POST",
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//             "Content-Type": "application/json",
+//           },
+//           body: JSON.stringify({
+//             qrValue,
+//             latitude: location.latitude,
+//             longitude: location.longitude,
+//             accuracy: location.accuracy,
+//           }),
+//         }
+//       );
+
+//       const result = await response.json();
+
+//       if (!response.ok || !result.success) {
+//         throw new Error(result.message || "Punch Out failed.");
+//       }
+
+//       setMessage("Punch Out successful!");
+//     } catch (err) {
+//       console.error("Punch Out error:", err);
+
+//       setError(err.message || "Unable to process Punch Out.");
+//     } finally {
+//       if (mountedRef.current) {
+//         setSubmitting(false);
+//       }
+//     }
+//   };
+
+//   return (
+//     <div className="punch-out-page">
+//       <div className="punch-out-card">
+//         <h2>Punch Out</h2>
+
+//         <p>Scan the QR code at your current site.</p>
+
+//         {!qrValue && (
+//           <div id="punch-out-reader"></div>
+//         )}
+
+//         {qrValue && (
+//           <div className="punch-out-info">
+//             <p>
+//               <strong>QR Code:</strong> Scanned successfully
+//             </p>
+
+//             {location && (
+//               <>
+//                 <p>Latitude: {location.latitude}</p>
+//                 <p>Longitude: {location.longitude}</p>
+//                 <p>GPS Accuracy: {location.accuracy} metres</p>
+//               </>
+//             )}
+
+//             {loadingLocation && (
+//               <p>Getting your current location...</p>
+//             )}
+
+//             {!loadingLocation && !location && !message && (
+//               <button
+//                 type="button"
+//                 onClick={captureLocation}
+//                 className="punch-out-secondary"
+//               >
+//                 Retry Location
+//               </button>
+//             )}
+//           </div>
+//         )}
+
+//         {error && (
+//           <p className="punch-out-error">{error}</p>
+//         )}
+
+//         {message && (
+//           <p className="punch-out-success">{message}</p>
+//         )}
+
+//         {qrValue && location && !message && (
+//           <button
+//             type="button"
+//             className="punch-out-submit"
+//             onClick={handleSubmit}
+//             disabled={submitting}
+//           >
+//             {submitting ? "Processing..." : "Confirm Punch Out"}
+//           </button>
+//         )}
+
+//         {message && (
+//           <button
+//             type="button"
+//             className="punch-out-submit"
+//             onClick={onSuccess}
+//           >
+//             Continue
+//           </button>
+//         )}
+
+//         <button
+//           type="button"
+//           className="punch-out-back"
+//           onClick={onBack}
+//           disabled={submitting || Boolean(message)}
+//         >
+//           Back to Dashboard
+//         </button>
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default PunchOut;
+
+
 import { useEffect, useRef, useState } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 import "./PunchOut.css";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+const extractQrValue = (scannedText) => {
+  try {
+    const url = new URL(scannedText);
+    return url.searchParams.get("x") || scannedText.trim();
+  } catch {
+    return scannedText.trim();
+  }
+};
+
 function PunchOut({ onBack, onSuccess }) {
   const scannerRef = useRef(null);
   const scannedRef = useRef(false);
   const mountedRef = useRef(false);
+
+  // Coordinates scanner startup and cleanup.
+  const scannerLifecycleRef = useRef(Promise.resolve());
 
   const [qrValue, setQrValue] = useState("");
   const [location, setLocation] = useState(null);
@@ -16,27 +329,6 @@ function PunchOut({ onBack, onSuccess }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-
-  // Stop and clear QR scanner.
-  const stopScanner = async () => {
-    if (scannerRef.current) {
-      const scanner = scannerRef.current;
-
-      try {
-        if (scanner.isScanning) {
-          await scanner.stop();
-        }
-
-        await scanner.clear();
-      } catch (err) {
-        console.error("Scanner stop error:", err);
-      }
-
-      if (scannerRef.current === scanner) {
-        scannerRef.current = null;
-      }
-    }
-  };
 
   // Capture employee's current GPS location.
   const captureLocation = () => {
@@ -80,15 +372,47 @@ function PunchOut({ onBack, onSuccess }) {
     );
   };
 
-  // Start QR scanner.
+  // Start and manage QR scanner.
   useEffect(() => {
     let mounted = true;
+    let scanner = null;
+    let stopPromise = null;
+
     mountedRef.current = true;
+    scannedRef.current = false;
+
+    // Stop and clear this scanner only once.
+    const stopAndClear = () => {
+      if (!scanner) {
+        return Promise.resolve();
+      }
+
+      if (!stopPromise) {
+        stopPromise = (async () => {
+          try {
+            if (scanner.isScanning) {
+              await scanner.stop();
+            }
+
+            await scanner.clear();
+          } catch (err) {
+            console.error("Scanner cleanup error:", err);
+          } finally {
+            if (scannerRef.current === scanner) {
+              scannerRef.current = null;
+            }
+          }
+        })();
+      }
+
+      return stopPromise;
+    };
 
     const startScanner = async () => {
-      try {
-        const scanner = new Html5Qrcode("punch-out-reader");
+      if (!mounted) return;
 
+      try {
+        scanner = new Html5Qrcode("punch-out-reader");
         scannerRef.current = scanner;
 
         await scanner.start(
@@ -100,15 +424,19 @@ function PunchOut({ onBack, onSuccess }) {
           async (decodedText) => {
             if (!mounted || scannedRef.current) return;
 
-            // Prevent duplicate scan callbacks.
             scannedRef.current = true;
 
-            setQrValue(decodedText);
-            setError("");
+            const extractedValue = extractQrValue(decodedText);
 
-            await stopScanner();
+            console.log("Scanned QR:", decodedText);
+            console.log("Extracted QR Value:", extractedValue);
+
+            // Stop camera before updating the UI.
+            await stopAndClear();
 
             if (mounted) {
+              setQrValue(extractedValue);
+              setError("");
               captureLocation();
             }
           },
@@ -116,6 +444,8 @@ function PunchOut({ onBack, onSuccess }) {
         );
       } catch (err) {
         console.error("QR scanner error:", err);
+
+        await stopAndClear();
 
         if (mounted) {
           setError(
@@ -125,12 +455,23 @@ function PunchOut({ onBack, onSuccess }) {
       }
     };
 
-    startScanner();
+    // Wait for the previous scanner lifecycle to finish.
+    const startTask = scannerLifecycleRef.current.then(
+      startScanner
+    );
+
+    scannerLifecycleRef.current = startTask;
 
     return () => {
       mounted = false;
       mountedRef.current = false;
-      stopScanner();
+
+      // Wait for startup to finish before stopping the scanner.
+      const cleanupTask = scannerLifecycleRef.current.then(
+        stopAndClear
+      );
+
+      scannerLifecycleRef.current = cleanupTask;
     };
   }, []);
 
@@ -142,7 +483,9 @@ function PunchOut({ onBack, onSuccess }) {
       setMessage("");
 
       if (!qrValue || !location) {
-        setError("Please scan the site QR and capture your location.");
+        setError(
+          "Please scan the site QR and capture your location."
+        );
         return;
       }
 
@@ -151,10 +494,14 @@ function PunchOut({ onBack, onSuccess }) {
         return;
       }
 
-      const token = localStorage.getItem("thirdPartyEmployeeToken");
+      const token = localStorage.getItem(
+        "thirdPartyEmployeeToken"
+      );
 
       if (!token) {
-        setError("Your login session has expired. Please login again.");
+        setError(
+          "Your login session has expired. Please login again."
+        );
         return;
       }
 
@@ -178,14 +525,18 @@ function PunchOut({ onBack, onSuccess }) {
       const result = await response.json();
 
       if (!response.ok || !result.success) {
-        throw new Error(result.message || "Punch Out failed.");
+        throw new Error(
+          result.message || "Punch Out failed."
+        );
       }
 
       setMessage("Punch Out successful!");
     } catch (err) {
       console.error("Punch Out error:", err);
 
-      setError(err.message || "Unable to process Punch Out.");
+      setError(
+        err.message || "Unable to process Punch Out."
+      );
     } finally {
       if (mountedRef.current) {
         setSubmitting(false);
@@ -200,9 +551,13 @@ function PunchOut({ onBack, onSuccess }) {
 
         <p>Scan the QR code at your current site.</p>
 
-        {!qrValue && (
-          <div id="punch-out-reader"></div>
-        )}
+        {/* Keep scanner container mounted until camera cleanup. */}
+        <div
+          id="punch-out-reader"
+          style={{
+            display: qrValue ? "none" : "block",
+          }}
+        ></div>
 
         {qrValue && (
           <div className="punch-out-info">
@@ -214,7 +569,9 @@ function PunchOut({ onBack, onSuccess }) {
               <>
                 <p>Latitude: {location.latitude}</p>
                 <p>Longitude: {location.longitude}</p>
-                <p>GPS Accuracy: {location.accuracy} metres</p>
+                <p>
+                  GPS Accuracy: {location.accuracy} metres
+                </p>
               </>
             )}
 
@@ -249,7 +606,9 @@ function PunchOut({ onBack, onSuccess }) {
             onClick={handleSubmit}
             disabled={submitting}
           >
-            {submitting ? "Processing..." : "Confirm Punch Out"}
+            {submitting
+              ? "Processing..."
+              : "Confirm Punch Out"}
           </button>
         )}
 
@@ -277,3 +636,4 @@ function PunchOut({ onBack, onSuccess }) {
 }
 
 export default PunchOut;
+
