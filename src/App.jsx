@@ -295,7 +295,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import PunchIn from "./pages/PunchIn";
-import PunchOut from "./pages/PunchOut";
+//import PunchOut from "./pages/PunchOut";
 import "./App.css";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -438,7 +438,7 @@ function App() {
           statusError={statusError}
           onRefreshAttendance={loadAttendanceStatus}
           onPunchIn={() => setCurrentPage("punch-in")}
-          onPunchOut={() => setCurrentPage("punch-out")}
+          //onPunchOut={() => setCurrentPage("punch-out")}
           onLogout={handleLogout}
         />
       )}
@@ -452,7 +452,7 @@ function App() {
         />
       )}
 
-      {currentPage === "punch-out" && (
+      {/* {currentPage === "punch-out" && (
         <PunchOut
           onBack={() => setCurrentPage("dashboard")}
           onSuccess={async () => {
@@ -460,7 +460,7 @@ function App() {
             setCurrentPage("dashboard");
           }}
         />
-      )}
+      )} */}
     </>
   );
 }

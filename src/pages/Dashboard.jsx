@@ -7,7 +7,7 @@ function Dashboard({
   statusError,
   onRefreshAttendance,
   onPunchIn,
-  onPunchOut,
+  //onPunchOut,
   onLogout,
 }) {
   return (
@@ -49,15 +49,7 @@ function Dashboard({
               <span>Punch In</span>
               <small>Start your attendance</small>
             </button>
-          ) : nextAction === "PUNCH_OUT" ? (
-            <button
-              className="attendance-button punch-out-button"
-              onClick={onPunchOut}
-            >
-              <span className="attendance-icon">↙</span>
-              <span>Punch Out</span>
-              <small>End your attendance</small>
-            </button>
+          
           ) : (
             <p>Attendance status is unavailable. Please retry.</p>
           )}
