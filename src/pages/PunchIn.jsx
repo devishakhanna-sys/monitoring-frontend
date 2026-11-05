@@ -1028,7 +1028,19 @@ function PunchIn({ onBack }) {
         return;
       }
 
-      setSuccessData(result.data);
+      //setSuccessData(result.data);
+
+      console.log("API RESPONSE:", result);
+console.log("DATA RECEIVED:", result.data);
+
+setSuccessData({
+  ...result.data,
+  employeeName: result.data?.employeeName,
+  punchInDate: result.data?.punchInDate,
+  punchInTime: result.data?.punchInTime,
+});
+
+console.log("SUCCESS DATA SET:", result.data);
       stopSelfieCamera();
 
       if (selfiePreview) {
