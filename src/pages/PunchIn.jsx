@@ -663,7 +663,8 @@ const formatTime = (timeString) => {
   });
 };
 
-function PunchIn({ onBack }) {
+//function PunchIn({ onBack }) {
+ function PunchIn({ onBack, onPunchInSuccess }) {
   const scannerRef = useRef(null);
   const isMountedRef = useRef(true);
   const videoRef = useRef(null);
@@ -1040,6 +1041,10 @@ setSuccessData({
   punchInTime: result.data?.punchInTime,
 });
 
+if (typeof onPunchInSuccess === "function") {
+  onPunchInSuccess(result.data);
+}
+
 console.log("SUCCESS DATA SET:", result.data);
       stopSelfieCamera();
 
@@ -1079,9 +1084,13 @@ console.log("SUCCESS DATA SET:", result.data);
       URL.revokeObjectURL(selfiePreview);
     }
 
+    // if (typeof onBack === "function") {
+    //   onBack();
+    // }
+
     if (typeof onBack === "function") {
-      onBack();
-    }
+  await onBack();
+}
   };
 
   const canSubmit = qrValue && location && (selfieFile || selfieSkipped);

@@ -290,7 +290,8 @@
 
 
 
-import { useState } from "react";
+//import { useState } from "react";
+import { useState, useEffect } from "react";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
@@ -306,6 +307,132 @@ function App() {
   const [nextAction, setNextAction] = useState(null);
   const [statusLoading, setStatusLoading] = useState(false);
   const [statusError, setStatusError] = useState("");
+  const [isInitializing, setIsInitializing] = useState(true);
+
+  const [trackingSession, setTrackingSession] = useState(() => {
+  try {
+    return JSON.parse(
+      localStorage.getItem("thirdPartyEmployeeLocationTracking")
+    );
+  } catch {
+    return null;
+  }
+});
+
+useEffect(() => {
+  if (!trackingSession?.attendanceId || !trackingSession?.token) {
+    return;
+  }
+
+  let isRequestInProgress = false;
+
+  const stopTracking = () => {
+    localStorage.removeItem("thirdPartyEmployeeLocationTracking");
+    setTrackingSession(null);
+  };
+
+  const sendLocation = () => {
+    if (isRequestInProgress) return;
+
+    // Eight hours from the time Punch-In tracking started.
+    if (Date.now() >= trackingSession.startedAt + 8 * 60 * 60 * 1000) {
+      stopTracking();
+      return;
+    }
+
+    if (!navigator.geolocation) {
+      console.error("GPS is not supported by this device.");
+      return;
+    }
+
+    isRequestInProgress = true;
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const response = await fetch(
+            `${API_BASE_URL.replace(/\/$/, "")}/third-party-employee/save-location`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${trackingSession.token}`,
+              },
+              body: JSON.stringify({
+                attendanceId: trackingSession.attendanceId,
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                accuracy: position.coords.accuracy,
+              }),
+            }
+          );
+
+          const result = await response.json();
+
+          if (response.status === 410) {
+            stopTracking();
+            return;
+          }
+
+          if (response.status === 401 || response.status === 403) {
+            stopTracking();
+            return;
+          }
+
+          if (!response.ok || !result.success) {
+            console.error("Location save failed:", result.message);
+          }
+        } catch (error) {
+          console.error("Location tracking API error:", error);
+        } finally {
+          isRequestInProgress = false;
+        }
+      },
+      (error) => {
+        console.error("GPS tracking error:", error);
+        isRequestInProgress = false;
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0,
+      }
+    );
+  };
+
+  // First additional location is collected 30 seconds after Punch-In.
+  const intervalId = setInterval(sendLocation, 30000);
+
+  return () => clearInterval(intervalId);
+}, [trackingSession]);
+
+
+const startLocationTracking = (attendance) => {
+  if (!attendance?.attendanceId) {
+    console.error("Attendance ID missing. Location tracking not started.");
+    return;
+  }
+
+  const token = localStorage.getItem("thirdPartyEmployeeToken");
+
+  if (!token) {
+    console.error("Employee token missing. Location tracking not started.");
+    return;
+  }
+
+  const session = {
+    attendanceId: attendance.attendanceId,
+    startedAt: Date.now(),
+    token,
+  };
+
+  localStorage.setItem(
+    "thirdPartyEmployeeLocationTracking",
+    JSON.stringify(session)
+  );
+
+  setTrackingSession(session);
+};
 
   
   const handleLogin = async (mobileNumber) => {
@@ -406,6 +533,65 @@ function App() {
     }
   };
 
+  useEffect(() => {
+  const restoreSession = async () => {
+    const token = localStorage.getItem("thirdPartyEmployeeToken");
+
+    if (!token) {
+      setIsInitializing(false);
+      return;
+    }
+
+    try {
+      if (!API_BASE_URL) {
+        throw new Error("API URL is not configured.");
+      }
+
+      const response = await fetch(
+        `${API_BASE_URL.replace(/\/$/, "")}/third-party-employee/attendance-status`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem("thirdPartyEmployeeToken");
+        localStorage.removeItem("thirdPartyEmployee");
+        setCurrentPage("login");
+        return;
+      }
+
+      if (!response.ok || !result.success) {
+        throw new Error(
+          result.message || "Unable to restore login session."
+        );
+      }
+
+      setNextAction(result.data.nextAction);
+      setCurrentPage("dashboard");
+
+    } catch (error) {
+      console.error("Session restoration error:", error);
+      setStatusError(
+        error.message || "Unable to connect to the server. Please retry."
+      );
+
+      // Keep the saved token so the employee can retry.
+      setCurrentPage("dashboard");
+
+    } finally {
+      setIsInitializing(false);
+    }
+  };
+
+  restoreSession();
+}, []);
+
   // Logout without changing attendance
   const handleLogout = () => {
     localStorage.removeItem("thirdPartyEmployeeToken");
@@ -415,6 +601,10 @@ function App() {
     setStatusError("");
     setCurrentPage("login");
   };
+
+  if (isInitializing) {
+  return <p>Restoring your session...</p>;
+}
 
   return (
     <>
@@ -444,12 +634,20 @@ function App() {
       )}
 
       {currentPage === "punch-in" && (
+        // <PunchIn
+        //   onBack={() => {
+        //     loadAttendanceStatus();
+        //     setCurrentPage("dashboard");
+        //   }}
+        // />
+
         <PunchIn
-          onBack={() => {
-            loadAttendanceStatus();
-            setCurrentPage("dashboard");
-          }}
-        />
+  onPunchInSuccess={startLocationTracking}
+  onBack={async () => {
+    await loadAttendanceStatus();
+    setCurrentPage("dashboard");
+  }}
+/>
       )}
 
       {/* {currentPage === "punch-out" && (
